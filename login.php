@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Your database connection details
     $servername = "localhost";
     $username_db = "root";
-    $password_db = " ";
+    $password_db = "";
     $dbname = "smartcard_db";
 
     // Create a database connection

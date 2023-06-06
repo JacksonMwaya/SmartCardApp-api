@@ -30,7 +30,7 @@ $semester2Paid = $data['semester2Paid'] ? 1 : 0; // Convert boolean value to 1 o
 // Connect to your database
 $servername = "localhost";
 $username_db = "root";
-$password_db = " ";
+$password_db = "";
 $dbname = "smartcard_db";
 
 $conn = new mysqli($servername, $username_db, $password_db, $dbname);

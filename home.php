@@ -4,7 +4,7 @@ session_start(); // Start the session
 // Connect to your database
 $servername = "localhost";
 $username_db = "root";
-$password_db = " ";
+$password_db = "";
 $dbname = "smartcard_db";
 
 $conn = new mysqli($servername, $username_db, $password_db, $dbname);
