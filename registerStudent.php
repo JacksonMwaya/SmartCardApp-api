@@ -7,6 +7,13 @@ if (isset($_SESSION['user_id'])) {
     $response = array('status' => 'success', 'message' => 'User is already logged in');
     echo json_encode($response);
     exit();
+} 
+
+// Check if user is an admin
+if ($_SESSION['role'] !== 'admin') {
+    $response = array('status' => 'error', 'message' => 'Unauthorized access');
+    echo json_encode($response);
+    exit();
 }
 
 // Connect to your database

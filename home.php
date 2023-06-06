@@ -15,12 +15,18 @@ if ($conn->connect_error) {
 }
 
 // Check if the user is logged in
-if (!isset($_SESSION['user_id'])) {
-    // Redirect or handle the case where the user is not logged in
-    die("User not logged in."); 
-    header('Location: login.php');
-    exit;
-} 
+if (!isset($_SESSION['user_id'])) { 
+
+    $response = array('status' => 'error', 'message' => 'User not logged in');
+    echo json_encode($response);
+    exit();
+}  
+// Check if user is an admin
+if ($_SESSION['role'] !== 'admin') {
+    $response = array('status' => 'error', 'message' => 'Unauthorized access');
+    echo json_encode($response);
+    exit();
+}
 
 
 // Retrieve the user details

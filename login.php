@@ -43,12 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Successful login
 
         // Store user information in session
-        $_SESSION['user_id'] = $username; // Store lecturer_id in the session
+        $_SESSION['user_id'] = $username; // Store lecturer_id in the session  
+
+        // set role is an admin
+        if ($_SESSION['user_id'] === '20100000000') { 
+            $_SESSION['role'] = 'admin';
+          }
 
         // Return success response
         $response = array('status' => 'success', 'message' => 'Login successful');
-        echo json_encode($response);
-        exit();
+        echo json_encode($response); 
+        exit();  
+
     } else {
         // Invalid credentials
         $response = array('status' => 'error', 'message' => 'Invalid username or password');

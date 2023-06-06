@@ -5,6 +5,12 @@ session_start();
 if (!isset($_SESSION['user_id'])) {
     $response = array('status' => 'error', 'message' => 'User not logged in');
     echo json_encode($response);
+    exit(); 
+} 
+// Check if user is an admin
+if ($_SESSION['role'] !== 'admin') {
+    $response = array('status' => 'error', 'message' => 'Unauthorized access');
+    echo json_encode($response);
     exit();
 }
 // Check if the request method is PUT
