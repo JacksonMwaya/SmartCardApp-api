@@ -1,31 +1,17 @@
 <?php
 session_start();
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    $response = array('status' => 'error', 'message' => 'User not logged in');
-    echo json_encode($response);
-    exit(); 
-} 
-// Check if user is an admin
-if ($_SESSION['role'] !== 'admin') {
-    $response = array('status' => 'error', 'message' => 'Unauthorized access');
-    echo json_encode($response);
-    exit();
-}
-// Check if the request method is PUT
-if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-    $response = array('status' => 'error', 'message' => 'Invalid request method');
-    echo json_encode($response);
-    exit();
-} 
+header('Content-Type: application/json');
+header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your frontend URL
+header("Access-Control-Allow-Methods: PUT");
+header("Access-Control-Allow-Headers: Content-Type");
 
-// Retrieve registration number from the request URL or request body (depending on your API design)
-$registrationNumber = $_REQUEST['registrationNumber'];
 
 // Retrieve semester 2 payment status from the request body
 $data = json_decode(file_get_contents('php://input'), true);
-$semester2Paid = $data['semester2Paid'] ? 1 : 0; // Convert boolean value to 1 or 0
+$registrationNumber = $data['registrationNumber'];
+$semester2Paid = $data['semester2paid'] ? 1 : 0; // Convert boolean value to 1 or 0
 
 // Connect to your database
 $servername = "localhost";
@@ -37,30 +23,22 @@ $conn = new mysqli($servername, $username_db, $password_db, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    die("Connection failed: " . $conn->connect_error); 
+    exit();
 }
-
 
 // Prepare the SQL statement to update semester2_paid for the given registration number
-$stmt = $conn->prepare("UPDATE students SET sem2_pay = ? WHERE reg_no = ?");
-$stmt->bind_param("is", $semester2Paid, $registrationNumber);
+$sql = "UPDATE student SET sem2_pay = {$semester2Paid} WHERE reg_no = {$registrationNumber}";
 
-// Execute the statement to update the value
-$stmt->execute();
-
-// Check if any rows were affected by the update operation
-if ($stmt->affected_rows > 0) {
-    $response = array('status' => 'success', 'message' => 'Semester 2 payment status updated successfully');
+// Execute the SQL statement
+if ($conn->query($sql) === true) {
+    $response = array('status' => 200, 'message' => 'Semester 2 payment status updated successfully');
 } else {
-    $response = array('status' => 'error', 'message' => 'Registration number not found');
+    $response = array('status' => 404, 'message' => 'Registration number not found');
 }
-
-// Close the prepared statement
-$stmt->close();
 
 // Close the database connection
 $conn->close();
 
 // Return the response to the frontend
 echo json_encode($response);
-?>

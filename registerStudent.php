@@ -1,20 +1,13 @@
 <?php
 session_start();
 
-// Check if user is already logged in
-if (isset($_SESSION['user_id'])) {
-    // User is already logged in, return success response 
-    $response = array('status' => 'success', 'message' => 'User is already logged in');
-    echo json_encode($response);
-    exit();
-} 
+header('Content-Type: application/json');
+header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your frontend URL
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Headers: Content-Type");
 
-// Check if user is an admin
-if ($_SESSION['role'] !== 'admin') {
-    $response = array('status' => 'error', 'message' => 'Unauthorized access');
-    echo json_encode($response);
-    exit();
-}
+$jsonData = json_decode(file_get_contents('php://input'), true);
 
 // Connect to your database
 $servername = "localhost";
@@ -27,79 +20,59 @@ $conn = new mysqli($servername, $username_db, $password_db, $dbname);
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+    exit();
 }
 
+$_SESSION['user_id'] = '20100000000';
+
 // Retrieve student details sent from the frontend
-$fname = $_POST['firstName']; 
-$lname = $_POST['LastName'];
-$registrationNumber = $_POST['registrationNumber'];
-$cardNumber = $_POST['cardNo']; // Exclude this from the students table
-$year = $_POST['year']; 
-$college = $_POST['college'];
-$gender = $_POST['gender'];
-$programme = $_POST['programme'];
-$semester1Paid = $_POST['semester1Paid'] ? 1 : 0;
-$semester2Paid = $_POST['semester2Paid'] ? 1 : 0; // Convert boolean value to 1 or 0
-$admin_id = $_SESSION['user_id']; 
+$fname = $jsonData['firstName'];
+$lname = $jsonData['lastName'];
+$registrationNumber = $jsonData['registrationNumber'];
+$cardNumber = $jsonData['cardNo']; // Exclude this from the students table
+$year = $jsonData['year'];
+$college = $jsonData['college'];
+$gender = $jsonData['gender'];
 
+// Validate the gender value and set it accordingly
+if ($gender === "female" || $gender === "male") {
+    $genderValue = $gender;
+} else {
+    $genderValue = null; // If the gender value is neither "female" nor "male", set it to null or any other appropriate default value
+}
 
-// Check if registration number or card number already exist in the database
-$stmt_check1 = $conn->prepare("SELECT COUNT(*) AS count FROM Student WHERE registration_number = ? ");
-$stmt_check1->bind_param("s", $registrationNumber);
-$stmt_check1->execute();
-$result1 = $stmt_check1->get_result();
-$row1 = $result1->fetch_assoc();
-$count1 = $row1['count'];
-
-// If registration number or card number already exists, return an error response
-if ($count1 > 0) {
-    $response = array('status' => 'error', 'message' => 'Registration number or card number already exists');
-    echo json_encode($response);
-    exit();
-} 
-// Check if registration number or card number already exist in the database
-$stmt_check2 = $conn->prepare("SELECT COUNT(*) AS count FROM Student_rfid_id WHERE  card_number = ?");
-$stmt_check2->bind_param("s", $cardNumber);
-$stmt_check2->execute();
-$result2 = $stmt_check2->get_result();
-$row2 = $result2->fetch_assoc();
-$count2 = $row2['count'];
-
-// If registration number or card number already exists, return an error response
-if ($count2 > 0) {
-    $response = array('status' => 'error', 'message' => 'Registration number or card number already exists');
-    echo json_encode($response);
-    exit();
-} 
-
+$programme = $jsonData['programme'];
+$semester1Paid = $jsonData['semester1paid'] ? 1 : 0;
+$semester2Paid = $jsonData['semester2paid'] ? 1 : 0; // Convert boolean value to 1 or 0 
+$dir = "profilePicture/" . $registrationNumber;
+$admin_id = $_SESSION['user_id'];
 
 // Prepare the SQL statement to insert student details into the students table
-$stmt_students = $conn->prepare("INSERT INTO  student(reg_no,Programme,s_lname,sf_name,college,Year_of_study,sem1_pay,sem2_pay, admin_id)  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt_students->bind_param("sssssiiii", $registrationNumber, $programme, $lname, $fname, $college, $year, $semester1Paid, $semester2Paid, $admin_id);
+$query_students = "INSERT INTO student (reg_no, Programme, Gender, sl_name, sf_name, college, Year_of_study, sem1_pay, sem2_pay, admin_id, img_dir) VALUES ('$registrationNumber', '$programme','$genderValue', '$lname', '$fname', '$college', '$year', '$semester1Paid', '$semester2Paid', '$admin_id', '$dir')";
 
 // Execute the statement to insert student details into the students table
-$stmt_students->execute();
+if (!$conn->query($query_students)) {
+    $response = array('status' => 500, 'message' => 'Failed to execute statement: ' . $conn->error);
+    echo json_encode($response);
+    exit();
+}
 
 // Get the student ID of the newly inserted record
-$studentId = $stmt_students->insert_id;
+$studentId = $conn->insert_id;
 
 // Prepare the SQL statement to insert card details into the card table
-$stmt_card = $conn->prepare("INSERT INTO  Student_rfid_id(rfid_id, reg_no) VALUES (?, ?)");
-$stmt_card->bind_param("ss", $cardNumber, $registrationNumber);
+$query_card = "INSERT INTO Student_rfid_id (rfid_id, reg_no) VALUES ('$cardNumber', '$registrationNumber')";
 
-// Execute the statement to insert card details into the student rfid table table
-$stmt_card->execute();
-
-// Close the prepared statements
-$stmt_students->close();
-$stmt_card->close();
-
-
+// Execute the statement to insert card details into the student rfid table
+if (!$conn->query($query_card)) {
+    $response = array('status' => 500, 'message' => 'Failed to execute statement: ' . $conn->error);
+    echo json_encode($response);
+    exit();
+}
 
 // Close the database connection
 $conn->close();
 
 // Return a success response to the frontend
-$response = array('status' => 'success', 'message' => 'Student registered successfully');
+$response = array('status' => 200, 'message' => 'Student registered successfully');
 echo json_encode($response);
-?>
