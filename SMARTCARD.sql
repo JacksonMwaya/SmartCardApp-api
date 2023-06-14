@@ -66,7 +66,7 @@ INSERT INTO Administrator (admin_id, phone_no, email, al_name, af_name, passwd)
 VALUES ('20100000000', '0766830896', 'adminud@gmail.com', 'ud', 'admin', 'admin');
 
 INSERT INTO Student (reg_no, Programme, sl_name, sf_name, college, Year_of_study, sem1_pay, sem2_pay, img_dir, admin_id, Gender)
-VALUES ('20190411297', 'CEIT', 'Saitoria', 'Saroni', 'COICT', 4, 1, 0, 'profilePicture/20190411297', 20100000000, 'Male');
+VALUES ('20190411297', 'CEIT', 'Saitoria', 'Saroni', 'COICT', 4, 1, 0, 'profilePicture/20190411297', '20100000000', 'Male');
 
 INSERT INTO Student (reg_no, Programme, sl_name, sf_name, college, Year_of_study, sem1_pay, sem2_pay, img_dir, admin_id, Gender)
 VALUES ('20190408124', 'CEIT', 'Msangi', 'Daniel', 'COICT', 4, 1, 1, 'profilePicture/20190408124', '20100000000', 'Male');

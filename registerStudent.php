@@ -25,7 +25,7 @@ if ($conn->connect_error) {
     exit();
 }
 
-//$_SESSION['user_id'] = '20100000000';
+
 
 // Retrieve student details sent from the frontend
 $fname = $jsonData['firstName'];
