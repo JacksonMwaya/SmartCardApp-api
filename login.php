@@ -1,7 +1,14 @@
 <?php
 
-session_save_path(__DIR__ . '/sessions');
-ini_set('session.gc_maxlifetime', 3600);
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => 'localhost',
+    'secure' => false,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
 session_start();
 
 header('Content-Type: application/json');
@@ -9,15 +16,10 @@ header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
 header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your frontend URL
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
-
+header('Access-Control-Allow-Credentials: true');
 
 // Check if user is already logged in
-if (isset($_SESSION['user_id'])) {
-    // User is already logged in, return success response
-    $response = array('status' => 201, 'message' => 'User is already logged in');
-    echo json_encode($response);
-    exit();
-}
+
 
 $data = json_decode(file_get_contents('php://input'), true);
 
@@ -44,27 +46,30 @@ if ($conn->connect_error) {
     exit();
 }
 
-// Prepare the SQL statement
-$stmt = $conn->prepare("SELECT lecturer_id FROM lecturers WHERE lecturer_id = ? AND password = ? ");
-$stmt->bind_param("ss", $username, $password);
-$stmt->execute();
-$result = $stmt->get_result();
+// Prepare the SQL statement with variables included in the query string
+$sql = "SELECT lecturer_id, department FROM lecturer WHERE lecturer_id = '$username' AND passwd = '$password'";
+$result = $conn->query($sql);
 
 // Check if the login is successful
 if ($result->num_rows === 1) {
-    // Successful login
-
+    // Successful login 
+    $dept = $result->fetch_assoc();
     // Store user information in session
     $_SESSION['user_id'] = $username;
+    $_SESSION['department'] = $dept['department'];
 
     // set role is an admin
-    if ($_SESSION['user_id'] === '20100000000') {
-        $_SESSION['role'] = 'admin';
-    }
 
-    // Return success response
-    $response = array('status' => 200, 'message' => 'Login successful');
-    echo json_encode($response);
+    if ($_SESSION['department']  === 'ADMIN') {
+        $_SESSION['role'] = 'admin';
+        $response = array('status' => 200, 'message' => 'Login successful Admin');
+        echo json_encode($response);
+    }
+    if ($_SESSION['department']  !== 'ADMIN') {
+        $_SESSION['role'] = 'Lecturer';
+        $response = array('status' => 202, 'message' => 'Login successful Lecturer');
+        echo json_encode($response);
+    }
 } else {
     // Invalid credentials
     $response = array('status' => 401, 'message' => 'Invalid username or password');
@@ -73,5 +78,4 @@ if ($result->num_rows === 1) {
 }
 
 // Close the database connection
-$stmt->close();
 $conn->close();

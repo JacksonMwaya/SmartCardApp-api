@@ -1,11 +1,14 @@
 <?php
-session_start();
 
 header('Content-Type: application/json');
 header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
 header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your frontend URL
 header("Access-Control-Allow-Methods: PUT");
 header("Access-Control-Allow-Headers: Content-Type");
+header('Access-Control-Allow-Credentials: true');
+
+session_start();
+
 
 
 // Retrieve semester 2 payment status from the request body
@@ -23,7 +26,7 @@ $conn = new mysqli($servername, $username_db, $password_db, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error); 
+    die("Connection failed: " . $conn->connect_error);
     exit();
 }
 

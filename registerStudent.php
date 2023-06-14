@@ -1,11 +1,13 @@
 <?php
-session_start();
 
 header('Content-Type: application/json');
 header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
 header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your frontend URL
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
+header('Access-Control-Allow-Credentials: true');
+
+session_start();
 
 $jsonData = json_decode(file_get_contents('php://input'), true);
 
@@ -23,7 +25,7 @@ if ($conn->connect_error) {
     exit();
 }
 
-$_SESSION['user_id'] = '20100000000';
+//$_SESSION['user_id'] = '20100000000';
 
 // Retrieve student details sent from the frontend
 $fname = $jsonData['firstName'];
