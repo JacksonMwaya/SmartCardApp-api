@@ -14,8 +14,12 @@ session_start();
 
 $jsonData = json_decode(file_get_contents('php://input'), true);
 
+$_SESSION['deviceName'] = 'D01'; //comment this line
+$_SESSION['deviceOption']= 'D01';   //comment this line
+date_default_timezone_set('Africa/Dar_es_Salaam');
 
-if ($_SESSION['deviceName'] === $jsonData['selectedDevice']) {
+
+if ($_SESSION['deviceName'] === $_SESSION['deviceOption']) {
 
     // Connect to your database
     $servername = "localhost";
@@ -31,8 +35,10 @@ if ($_SESSION['deviceName'] === $jsonData['selectedDevice']) {
         exit();
     }
 
-    // Retrieve card ID from the session
-    $cardID = $_SESSION['cardID'];
+    // Retrieve card ID from the session 
+    $_SESSION['cardID'] = 'AB123456789C'; //comment this line
+    $cardID =   $_SESSION['cardID'];
+     
 
     // Query the database to retrieve student details based on card ID and device name
     $sql1 = "SELECT sf_name, sl_name, Year_of_study, college, reg_no, Programme, img_dir 
@@ -48,13 +54,13 @@ if ($_SESSION['deviceName'] === $jsonData['selectedDevice']) {
         // Fetch the student details
         $row = $result->fetch_assoc();
 
-        $student['Registration Number'] = $row['reg_no'];
-        $student['First Name'] = $row['sf_name'];
-        $student['Last Name'] = $row['sl_name'];
+        $student['RegistrationNumber'] = $row['reg_no'];
+        $student['FirstName'] = $row['sf_name'];
+        $student['LastName'] = $row['sl_name'];
         $student['Year'] = $row['Year_of_study'];
         $student['Programme'] = $row['Programme'];
         $student['College'] = $row['college'];
-        $student['img_dir'] = "http://localhost:8080/profilePicture/" . $row['reg_no'] . ".png";
+        $student['img_dir'] = "http://localhost:8080/smartcardapp-api/profilePicture/" . $row['reg_no'] . ".png";
 
         $timestamp = date('Y-m-d H:i:s');
         $regno = $row['reg_no'];
@@ -62,7 +68,6 @@ if ($_SESSION['deviceName'] === $jsonData['selectedDevice']) {
         $venue = $_SESSION['deviceName'];
 
         $sql2 = "INSERT INTO student_accesses(timestamp, reg_no, venue_id, college)  VALUES ('$timestamp','$regno','$venue','$college')";
-        $result2 = $conn->query($sql2);
 
         if ($conn->query($sql2) === TRUE) {
             // Insert successful, return response with status 200, success message, and student array
@@ -84,9 +89,9 @@ if ($_SESSION['deviceName'] === $jsonData['selectedDevice']) {
 
         // No matching student record found 
 
-        $student['Registration Number'] = "";
-        $student['First Name'] = "";
-        $student['Last Name'] = "";
+        $student['RegistrationNumber'] = "";
+        $student['FirstName'] = "";
+        $student['LastName'] = "";
         $student['Year'] = "";
         $student['Programme'] = "";
         $student['College'] = "";

@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS Student (
 );
 
 CREATE TABLE IF NOT EXISTS Student_accesses (
-  timestamp DATE NOT NULL,
+  timestamp DATETIME NOT NULL,
   reg_no CHAR(11) NOT NULL,
   venue_id VARCHAR(20) NOT NULL,
   college VARCHAR(15) NOT NULL,
