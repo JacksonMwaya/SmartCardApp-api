@@ -1,0 +1,21 @@
+<?php
+
+
+header('Content-Type: application/json');
+header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your frontend URL
+header("Access-Control-Allow-Methods: GET");
+header("Access-Control-Allow-Headers: Content-Type");
+header('Access-Control-Allow-Credentials: true');
+
+session_start();
+
+
+if (!isset($_SESSION['user_id'])) {
+    $response = array('status' => 401, 'message' => 'Not logged in');
+    echo json_encode($response);
+    exit();
+}  if (isset($_SESSION['user_id'])){
+    $response = array('status' => 200, 'message' => 'logged in'); 
+    echo json_encode($response);
+}

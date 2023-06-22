@@ -9,12 +9,6 @@ header('Access-Control-Allow-Credentials: true');
 session_start();
 
 
-if (!isset($_SESSION['user_id'])) {
-    $response = array('status' => 401, 'message' => 'Not logged in');
-    echo json_encode($response);
-    exit();
-}
-
  // Connect to your database
  $servername = "localhost";
  $username_db = "root";
@@ -29,7 +23,7 @@ if ($conn->connect_error) {
 }
 
 // Query to fetch student accesses and join with student table
-$sql = "SELECT student_accesses.timestamp, student.sf_name, student.sl_name, student_accesses.reg_no, student_accesses.venue_id, student_accesses.college
+$sql = "SELECT student_accesses.timestamp, student.sf_name, student.sl_name, student_accesses.reg_no, student_accesses.venue_id, student_accesses.college, student_accesses.id
         FROM student_accesses
         JOIN student ON student_accesses.reg_no = student.reg_no";
 
@@ -49,7 +43,8 @@ if ($result->num_rows > 0) {
     // Fetch each row and store in the studentAccesses array
     while ($row = $result->fetch_assoc()) { 
 
-        $studentAccess = array(
+        $studentAccess = array( 
+            'id'  => $row['id'],
             'timestamp' => $row['timestamp'],
             'first_name' => $row['sf_name'],
             'last_name' => $row['sl_name'], 

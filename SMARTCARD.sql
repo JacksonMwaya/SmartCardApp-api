@@ -46,14 +46,15 @@ CREATE TABLE IF NOT EXISTS Student (
 );
 
 CREATE TABLE IF NOT EXISTS Student_accesses (
+  id INT AUTO_INCREMENT,
   timestamp DATETIME NOT NULL,
   reg_no CHAR(11) NOT NULL,
   venue_id VARCHAR(20) NOT NULL,
   college VARCHAR(15) NOT NULL,
-  PRIMARY KEY (timestamp),
+  PRIMARY KEY (id),
   FOREIGN KEY (reg_no) REFERENCES Student(reg_no),
   FOREIGN KEY (venue_id, college) REFERENCES Venue(venue_id, college)
-);
+); 
 
 CREATE TABLE IF NOT EXISTS Student_rfid_id (
   rfid_id VARCHAR(20) NOT NULL,

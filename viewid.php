@@ -36,7 +36,7 @@ if ($_SESSION['deviceName'] === $_SESSION['deviceOption']) {
     }
 
     // Retrieve card ID from the session 
-    $_SESSION['cardID'] = 'AB123456789C'; //comment this line
+    $_SESSION['cardID'] = 'AB123456789B'; //comment this line
     $cardID =   $_SESSION['cardID'];
      
 
