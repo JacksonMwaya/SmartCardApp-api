@@ -1,29 +1,35 @@
 <?php
-
 header('Content-Type: application/json');
 header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your hardware URL
+header("Access-Control-Allow-Origin: http://192.168.43.109:3000"); // Replace with your hardware URL
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
-header('Access-Control-Allow-Credentials: true'); 
+header('Access-Control-Allow-Credentials: true');
 
 session_start();
 
-$jsonData = json_decode(file_get_contents('php://input'), true);
+$deviceOptiondata = json_decode(file_get_contents('php://input'), true);
 
-// Receive device option from the frontend
+// Check if 'deviceOption' key exists in $jsonData
+if (isset($deviceOptiondata['deviceOption'])) {
+    $deviceOption = $deviceOptiondata["deviceOption"];
 
-$deviceOption= $jsonData['deviceOption']; 
-$sessionId = session_id();
 
-// Save device option
-$_SESSION['deviceOption'] = $deviceOption; 
+    // Save device option
+    $_SESSION["deviceOption"] = $deviceOption;
 
-$response = array(
-    'status' => 200,
-    'message' => 'Stored in session',
-    'sessionId' => $sessionId
-); 
+    $response = array(
+        'status' => 200,
+        'message' => 'Option stored',
+    );
 
-echo json_encode($response); 
+    echo json_encode($response);
+} else {
+    // Handle case when 'deviceOption' key is missing
+    $response = array(
+        'status' => 400,
+        'message' => 'Missing device option'
+    );
 
+    echo json_encode($response);
+}

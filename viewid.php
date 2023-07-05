@@ -2,7 +2,7 @@
 
 header('Content-Type: application/json');
 header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your frontend URL
+header("Access-Control-Allow-Origin: http://192.168.43.109:3000"); // Replace with your frontend URL
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 header('Access-Control-Allow-Credentials: true');
@@ -12,14 +12,16 @@ session_start();
 
 // Check if the device name from the session matches the selected device name from the frontend 
 
-$jsonData = json_decode(file_get_contents('php://input'), true);
+$viewIdData = json_decode(file_get_contents('php://input'), true);
 
-$_SESSION['deviceName'] = 'D01'; //comment this line
-$_SESSION['deviceOption']= 'D01';   //comment this line
+$_SESSION["deviceName"] = $viewIdData['deviceName'];
+$_SESSION["cardID"] = $viewIdData['cardId'];  //comment this line
+
 date_default_timezone_set('Africa/Dar_es_Salaam');
 
 
-if ($_SESSION['deviceName'] === $_SESSION['deviceOption']) {
+
+if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
 
     // Connect to your database
     $servername = "localhost";
@@ -36,12 +38,12 @@ if ($_SESSION['deviceName'] === $_SESSION['deviceOption']) {
     }
 
     // Retrieve card ID from the session 
-    $_SESSION['cardID'] = 'AB123456789B'; //comment this line
+    //$_SESSION['cardID'] = '43f3513e'; //comment this line
     $cardID =   $_SESSION['cardID'];
-     
+
 
     // Query the database to retrieve student details based on card ID and device name
-    $sql1 = "SELECT sf_name, sl_name, Year_of_study, college, reg_no, Programme, img_dir 
+    $sql1 = "SELECT sf_name, sl_name, Year_of_study, college, reg_no, Programme, img_dir, sem1_pay,sem2_pay 
             FROM student
             WHERE reg_no = ( SELECT reg_no FROM student_rfid_id WHERE rfid_id = '$cardID' )";
 
@@ -68,15 +70,17 @@ if ($_SESSION['deviceName'] === $_SESSION['deviceOption']) {
         $venue = $_SESSION['deviceName'];
 
         $sql2 = "INSERT INTO student_accesses(timestamp, reg_no, venue_id, college)  VALUES ('$timestamp','$regno','$venue','$college')";
-
-        if ($conn->query($sql2) === TRUE) {
-            // Insert successful, return response with status 200, success message, and student array
-            $response = array(
-                'status' => 200,
-                'message' => 'Student inserted successfully',
-                'student' => $student
-            );
-            echo json_encode($response);
+        if ($row['sem1_pay'] == 1 || $row['sem2_pay'] == 1) {
+            if ($conn->query($sql2) === TRUE) {
+                // Insert successful, return response with status 200, success message, and student array
+                $response = array(
+                    'status' => 200,
+                    'message' => 'Student inserted successfully',
+                    'student' => $student
+                );
+                echo json_encode($response);
+                unset($_SESSION['cardID']);
+            }
         } else {
             // Insert failed, return response with status 500 and error message
             $response = array(

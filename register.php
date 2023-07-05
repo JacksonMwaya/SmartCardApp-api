@@ -2,7 +2,7 @@
 
 header('Content-Type: application/json');
 header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-header("Access-Control-Allow-Origin: http://localhost:3000"); // Replace with your frontend URL
+header("Access-Control-Allow-Origin: http://192.168.43.109:3000"); // Replace with your frontend URL
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
