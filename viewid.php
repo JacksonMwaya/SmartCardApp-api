@@ -81,16 +81,28 @@ if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
                 echo json_encode($response);
                 unset($_SESSION['cardID']);
             }
-        } else {
+        } else { 
+            $student = array();
+            // No matching student record found 
+    
+            $student['RegistrationNumber'] = "";
+            $student['FirstName'] = "";
+            $student['LastName'] = "";
+            $student['Year'] = "";
+            $student['Programme'] = "";
+            $student['College'] = "";
+            $student['img_dir'] = "";
+    
             // Insert failed, return response with status 500 and error message
             $response = array(
                 'status' => 500,
-                'message' => 'Failed to insert student'
+                'message' => 'Failed to insert student', 
+                'student' => $student,
             );
             echo json_encode($response);
         }
     } else {
-
+        $student = array();
         // No matching student record found 
 
         $student['RegistrationNumber'] = "";
@@ -103,7 +115,8 @@ if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
 
         $response = array(
             'status' => 404,
-            'message' => 'Student Does not exist'
+            'message' => 'Student Does not exist',
+            'student' => $student,
         );
         echo json_encode($response);
     }
