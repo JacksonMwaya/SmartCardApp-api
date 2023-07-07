@@ -19,7 +19,7 @@ $_SESSION["cardID"] = $viewIdData['cardId'];  //comment this line
 
 date_default_timezone_set('Africa/Dar_es_Salaam');
 
-
+$student = array();
 
 if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
 
@@ -39,7 +39,7 @@ if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
 
     // Retrieve card ID from the session 
     //$_SESSION['cardID'] = '43f3513e'; //comment this line
-    $cardID =   $_SESSION['cardID'];
+    $cardID =   $_SESSION["cardID"];
 
 
     // Query the database to retrieve student details based on card ID and device name
@@ -49,7 +49,6 @@ if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
 
     $result = $conn->query($sql1);
 
-    $student = array();
     // Check if a matching student record is found
     if ($result->num_rows > 0) {
 
@@ -62,7 +61,7 @@ if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
         $student['Year'] = $row['Year_of_study'];
         $student['Programme'] = $row['Programme'];
         $student['College'] = $row['college'];
-        $student['img_dir'] = "http://localhost:8080/smartcardapp-api/profilePicture/" . $row['reg_no'] . ".png";
+        $student['img_dir'] = "http://192.168.43.109:8080/smartcardapp-api/profilePicture/" . $row['reg_no'] . ".png";
 
         $timestamp = date('Y-m-d H:i:s');
         $regno = $row['reg_no'];
@@ -79,12 +78,11 @@ if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
                     'student' => $student
                 );
                 echo json_encode($response);
-                unset($_SESSION['cardID']);
             }
-        } else { 
-            $student = array();
+        } else {
+
             // No matching student record found 
-    
+
             $student['RegistrationNumber'] = "";
             $student['FirstName'] = "";
             $student['LastName'] = "";
@@ -92,18 +90,18 @@ if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
             $student['Programme'] = "";
             $student['College'] = "";
             $student['img_dir'] = "";
-    
+
             // Insert failed, return response with status 500 and error message
             $response = array(
                 'status' => 500,
-                'message' => 'Failed to insert student', 
+                'message' => 'Failed to insert student',
                 'student' => $student,
             );
+
             echo json_encode($response);
         }
     } else {
-        $student = array();
-        // No matching student record found 
+
 
         $student['RegistrationNumber'] = "";
         $student['FirstName'] = "";
