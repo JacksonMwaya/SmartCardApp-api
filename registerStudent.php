@@ -34,7 +34,7 @@ $registrationNumber = $jsonData['registrationNumber'];
 $cardNumber = $jsonData['cardNo']; // Exclude this from the students table
 $year = $jsonData['year'];
 $college = $jsonData['college'];
-$gender = $jsonData['gender'];
+$gender = $jsonData['gender']; 
 
 // Validate the gender value and set it accordingly
 if ($gender === "female" || $gender === "male") {
@@ -44,8 +44,8 @@ if ($gender === "female" || $gender === "male") {
 }
 
 $programme = $jsonData['programme'];
-$semester1Paid = $jsonData['semester1paid'] ? 1 : 0;
-$semester2Paid = $jsonData['semester2paid'] ? 1 : 0; // Convert boolean value to 1 or 0 
+$semester1Paid = $jsonData['semester1paid'] ;
+$semester2Paid = $jsonData['semester2paid'] ; // Convert boolean value to 1 or 0 
 $dir = "profilePicture/" . $registrationNumber;
 $admin_id = $_SESSION['user_id'];
 

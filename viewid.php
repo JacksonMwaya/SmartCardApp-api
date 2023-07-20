@@ -12,9 +12,12 @@ session_start();
 
 // Check if the device name from the session matches the selected device name from the frontend 
 
-$viewIdData = json_decode(file_get_contents('php://input'), true);
+$viewIdData = json_decode(file_get_contents('php://input'), true);  
 
-$_SESSION["deviceName"] = $viewIdData['deviceName'];
+ //$_SESSION['cardID'] = 'ab123456'; //comment this line
+ //$_SESSION["deviceName"] = 'D01';
+
+$_SESSION["deviceName"] = $viewIdData['deviceName']; 
 $_SESSION["cardID"] = $viewIdData['cardId'];  //comment this line
 
 date_default_timezone_set('Africa/Dar_es_Salaam');
@@ -38,7 +41,7 @@ if ($_SESSION["deviceName"] == $_SESSION["deviceOption"]) {
     }
 
     // Retrieve card ID from the session 
-    //$_SESSION['cardID'] = '43f3513e'; //comment this line
+   
     $cardID =   $_SESSION["cardID"];
 
 
